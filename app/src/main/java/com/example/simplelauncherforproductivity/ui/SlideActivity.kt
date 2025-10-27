@@ -7,9 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -18,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.simplelauncherforproductivity.data.entity.AppInfo
 import com.example.simplelauncherforproductivity.domain.usecases.GetInstalledAppsUseCase
 import com.example.simplelauncherforproductivity.domain.usecases.InterceptAppLaunchUseCase
 import com.example.simplelauncherforproductivity.presentation.viewmodel.SettingsViewModelFactory
@@ -51,21 +56,36 @@ class SlideActivity : ComponentActivity() {
 
                     val pagerState = rememberPagerState(pageCount = { slideCount + 1 })
 
-                    HorizontalPager(state = pagerState) { page ->
-                        if (page < slideCount) {
-                            HomeScreen(
-                                slideNumber = page + 1,
-                                onSettingsClick = { launchSettings() }
-                            )
-                        } else {
-                            val context = LocalContext.current
-                            AppDrawerScreen(
-                                allApps = installedApps,
-                                appsPerRow = appsPerRow,
-                                onAppClick = { app ->
-                                    InterceptAppLaunchUseCase()(context, app.packageName.toString())
-                                }
-                            )
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize()
+                    ) { page ->
+                        when {
+                            page == 0 -> {
+                                HomeScreen(
+                                    onSettingsClick = {
+                                        launchSettings()
+                                    }
+                                )
+                            }
+                            page < slideCount -> {
+                                AppSlide(
+                                    pageNumber = page + 1,
+                                    appsPerRow = appsPerRow,
+                                    allApps = emptyList(),
+                                    onAppClick = {}
+                                )
+                            }
+                            else -> {
+                                val context = LocalContext.current
+                                AppDrawerScreen(
+                                    allApps = installedApps,
+                                    appsPerRow = appsPerRow,
+                                    onAppClick = { app ->
+                                        InterceptAppLaunchUseCase()(context, app.packageName.toString())
+                                    }
+                                )
+                            }
                         }
                     }
                 }

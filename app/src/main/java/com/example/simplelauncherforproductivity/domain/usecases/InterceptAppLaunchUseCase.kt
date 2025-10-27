@@ -77,12 +77,11 @@ class InterceptAppLaunchUseCase: AccessibilityService() {
     }
 
     override fun onInterrupt() {
-        // This method is called when the service is interrupted (e.g., user disables it)
         Log.d("AppLaunchDetector", "Service interrupted.")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        job.cancel() // Clean up coroutines
+        job.cancel()
     }
 }

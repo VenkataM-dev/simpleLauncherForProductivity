@@ -70,7 +70,6 @@ class SettingsViewModel(
                     )
                 } catch (e: Exception) { null }
             }
-            // Use the correct repository to save the apps
             configuredAppRepository.replaceUnproductiveApps(newUnproductiveApps)
         }
     }

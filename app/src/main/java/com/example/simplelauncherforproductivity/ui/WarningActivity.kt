@@ -48,11 +48,6 @@ class WarningActivity : ComponentActivity() {
             }
         }
     }
-
-    // Prevent the user from dismissing the activity by pressing the back button
-    override fun onBackPressed() {
-        // Do nothing
-    }
 }
 
 @Composable
@@ -60,7 +55,6 @@ fun WarningDialog(
     onContinue: () -> Unit,
     onCancel: () -> Unit
 ) {
-    // Dialog is a composable that shows content in a floating window, perfect for this.
     Dialog(onDismissRequest = onCancel) {
         Card(
             shape = MaterialTheme.shapes.extraLarge,

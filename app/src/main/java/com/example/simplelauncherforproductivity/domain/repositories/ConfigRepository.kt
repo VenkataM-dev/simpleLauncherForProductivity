@@ -19,6 +19,4 @@ class ConfigRepository(private val configDao: ConfigDao) {
     suspend fun updateConfig(slideCount: Int, gridSize: Int) {
         configDao.updateConfig(ConfigEntity(id = 0, slideCount = slideCount, gridSize = gridSize))
     }
-
-    // You can add other update functions here, e.g., for slideCount if you add it to ConfigEntity
 }

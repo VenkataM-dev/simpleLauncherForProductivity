@@ -22,10 +22,8 @@ class SelectAppsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Get apps that are already marked as unproductive
         val previouslySelected = intent.getStringArrayExtra("PREVIOUSLY_SELECTED_PACKAGES")?.toSet() ?: emptySet()
 
-        // Get all launchable apps from the device
         val pm = packageManager
         val mainIntent = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
         val allApps = pm.queryIntentActivities(mainIntent, 0).map {
@@ -42,7 +40,6 @@ class SelectAppsActivity : ComponentActivity() {
                     allApps = allApps,
                     previouslySelected = previouslySelected,
                     onSelectionConfirmed = { selectedPackages ->
-                        // Send the result back to SettingsPageActivity
                         val resultIntent = Intent()
                         resultIntent.putExtra("SELECTED_PACKAGES", selectedPackages.toTypedArray())
                         setResult(Activity.RESULT_OK, resultIntent)
@@ -74,7 +71,6 @@ fun SelectAppsScreen(
             }
         }
     ) { paddingValues ->
-        // LazyColumn is the Composable equivalent of RecyclerView
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,7 +81,6 @@ fun SelectAppsScreen(
                     app = app,
                     isSelected = app.packageName in selectedPackages.value,
                     onToggle = {
-                        // Create a new set to trigger recomposition
                         val newSet = selectedPackages.value.toMutableSet()
                         if (it) {
                             newSet.add(app.packageName.toString())
@@ -109,11 +104,10 @@ fun SelectableAppRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onToggle(!isSelected) } // Make the whole row clickable
+            .clickable { onToggle(!isSelected) }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Use Accompanist's drawable painter to render the app icon
         AsyncImage(
             model = app.icon,
             contentDescription = app.label.toString(),

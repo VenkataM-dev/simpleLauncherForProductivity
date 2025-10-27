@@ -49,7 +49,6 @@ class SettingsPageActivity : ComponentActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val selectedPackages =
                     result.data?.getStringArrayExtra("SELECTED_PACKAGES") ?: emptyArray()
-                // Now we can call the ViewModel to handle the result
                 viewModel.onUnproductiveAppsSelected(selectedPackages)
             }
         }
@@ -142,7 +141,6 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Unproductive Apps Section
         Text(
             "Unproductive Apps",
             style = MaterialTheme.typography.titleMedium,
@@ -165,7 +163,6 @@ fun SettingsScreen(
             }
             items(unproductiveApps) { app ->
                 val packageManager = LocalContext.current.packageManager
-                // Load the icon drawable using the package name
                 val iconDrawable = try {
                     packageManager.getApplicationIcon(app.packageName)
                 } catch (e: Exception) {
@@ -175,7 +172,6 @@ fun SettingsScreen(
 
                 if (iconDrawable != null) {
                     AsyncImage(
-                        // Use the loaded drawable with rememberDrawablePainter
                         model = iconDrawable,
                         contentDescription = app.appLabel,
                         modifier = Modifier.size(48.dp)
