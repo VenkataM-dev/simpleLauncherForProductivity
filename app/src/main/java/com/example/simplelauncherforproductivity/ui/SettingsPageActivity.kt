@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -63,6 +65,19 @@ class SettingsPageActivity : ComponentActivity() {
                 val appsPerRow by viewModel.appsPerRow.collectAsStateWithLifecycle()
                 val unproductiveApps by viewModel.unproductiveApps.collectAsStateWithLifecycle()
 
+                val appSelectionLauncher =
+                    rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val selectedApps = result.data?.getStringArrayExtra("SELECTED_APPS")
+                        if (!selectedApps.isNullOrEmpty()) {
+                            // 2. Call the ViewModel to save the apps
+                            viewModel.onUnproductiveAppsSelected(selectedApps)
+                        }
+                    }
+                }
+
                 Scaffold(
                     topBar = { TopAppBar(title = { Text("Settings") }) },
                     bottomBar = {
@@ -89,12 +104,8 @@ class SettingsPageActivity : ComponentActivity() {
                         onAppsPerRowChange = { viewModel.onAppsPerRowChange(it) },
                         unproductiveApps = unproductiveApps,
                         onAddUnproductiveClick = {
-                            val intent = Intent(this, SelectAppsActivity::class.java)
-                            intent.putExtra(
-                                "PREVIOUSLY_SELECTED_PACKAGES",
-                                unproductiveApps.map { it.packageName }.toTypedArray()
-                            )
-                            selectAppsLauncher.launch(intent)
+                            val intent = Intent(this, AppSelectionActivity::class.java)
+                            appSelectionLauncher.launch(intent)
                         },
                         onSaveClick = {
                             viewModel.saveSettings()

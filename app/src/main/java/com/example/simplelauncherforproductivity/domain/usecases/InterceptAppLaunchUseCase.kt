@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import com.example.simplelauncherforproductivity.data.dao.ConfiguredAppDAO
 import com.example.simplelauncherforproductivity.data.database.AppDatabase
 import com.example.simplelauncherforproductivity.data.entity.AppStatus
 import com.example.simplelauncherforproductivity.domain.repositories.ConfiguredAppRepository
@@ -17,11 +18,14 @@ import kotlinx.coroutines.launch
 class InterceptAppLaunchUseCase: AccessibilityService() {
 
     private val job = SupervisorJob()
+
     private val serviceScope = CoroutineScope(Dispatchers.Main + job)
-    private lateinit var configuredAppRepository: ConfiguredAppRepository
 
     private var lastLaunchedPackage: String? = null
+
     private var lastLaunchTime: Long = 0
+
+    private lateinit var configuredAppDao: ConfiguredAppDAO
 
     operator fun invoke(context: Context, packageName: String) {
         val launchIntent: Intent? = context.packageManager.getLaunchIntentForPackage(packageName)
@@ -32,8 +36,7 @@ class InterceptAppLaunchUseCase: AccessibilityService() {
 
     override fun onCreate() {
         super.onCreate()
-        val dao = AppDatabase.getDatabase(this).configuredAppDao()
-        configuredAppRepository = ConfiguredAppRepository(dao)
+        configuredAppDao = AppDatabase.getDatabase(this).configuredAppDao()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -52,9 +55,9 @@ class InterceptAppLaunchUseCase: AccessibilityService() {
             Log.d("AppLaunchDetector", "Detected window change for package: $packageName")
 
             serviceScope.launch(Dispatchers.IO) {
-                val launchedApp = configuredAppRepository.getAppByPackageName(packageName)
+                val launchedAppStatus = configuredAppDao.getStatusForApp(packageName)
 
-                if (launchedApp?.status == AppStatus.UNPRODUCTIVE) {
+                if (launchedAppStatus == AppStatus.UNPRODUCTIVE) {
                     Log.d("AppLaunchDetector", "UNPRODUCTIVE app detected: $packageName. Triggering warning.")
 
                     lastLaunchedPackage = packageName

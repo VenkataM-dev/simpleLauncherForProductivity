@@ -40,7 +40,7 @@
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.interceptLaunchUseCase.InterceptLaunchUseCase" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
@@ -54,6 +54,10 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.SimpleLauncherForProductivity.Dialog" />
+
+        <activity
+            android:name=".ui.AppSelectionActivity"
+            android:exported="false" />
 
     </application>
 

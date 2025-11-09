@@ -28,4 +28,7 @@ interface ConfiguredAppDAO {
 
     @Query("DELETE FROM configured_apps")
     suspend fun deleteAll()
+
+    @Query("SELECT status FROM configured_apps WHERE packageName = :packageName")
+    suspend fun getStatusForApp(packageName: String): AppStatus
 }

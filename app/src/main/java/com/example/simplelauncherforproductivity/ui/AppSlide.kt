@@ -38,11 +38,7 @@ fun AppSlide(
         items(
             items = appsOnThisPage,
             key = { app -> "${app.packageName}_page$pageNumber" }
-        ) { app ->
-            AppIcon(
-                app = app,
-                onAppClick = () -> {}
-            )
+        ) {
         }
     }
 }
